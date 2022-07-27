@@ -1,25 +1,61 @@
-import logo from './logo.svg';
-import './App.css';
+import React,{useCallback,useEffect,useState} from "react";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+function Btn(props){
+    return (
+        <div>
+            <button  onClick={()=>{filterList(10)}} >click</button>
+        </div>
+    )
 }
 
-export default App;
+function List({appoint}){
+    return ( 
+        <figure>
+            <img src={appoint.thumbnailUrl} alt={appoint.title}/>
+            <figcaption>
+            {appoint.title}
+            </figcaption>
+        </figure>
+        )
+    
+}
+
+function App(){
+//  state 설정하기
+let [list,setList] = useState([])
+    // state 만들기
+const filterList = function(num){
+    list.filter(
+        item => {
+            return ( item.albumId === num )
+        }
+    )
+} 
+const fetchData = useCallback(
+    () =>{
+        fetch('https://jsonplaceholder.typicode.com/photos')
+        .then(response => response.json())
+        .then(data =>setList(data) )
+    }
+)
+// effect
+useEffect(()=> {fetchData()},[fetchData])
+    return (
+    <>
+    <div>
+        <Btn
+            list={list}
+            setList={setList}/>
+    </div>
+    <div>
+        {filterList.map(
+            appoint => <List 
+            key = {appoint.id}
+            appoint = {appoint}/>
+        )}
+    </div>
+   </>
+    )
+}
+
+export default App
